@@ -1,4 +1,4 @@
-# Hacker Portfolio
+# Portfolio
 
 A modern, interactive portfolio website with a terminal-like interface and 3D ID card effect.
 
