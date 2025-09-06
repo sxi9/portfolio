@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacker Portfolio - Terminal + 3D ID</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .terminal-content{
+  flex: 1;
+  padding: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  display: flex;               /* NEW */
+  flex-direction: column;      /* NEW */
+  overflow: hidden;            /* NEW: stop whole area from scrolling */
+}
+
+.terminal-output{
+  flex: 1;                     /* NEW: take all available height */
+  overflow-y: auto;            /* NEW: scroll only messages */
+  margin-bottom: 0;            /* NEW: remove extra gap pushing input down */
+}
+        :root {
+            --primary-green: #00ff41;
+            --primary-cyan: #00d4ff;
+            --dark-bg: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --terminal-bg: #0f0f0f;
+            --text-primary: #ffffff;
+            --text-secondary: #00ff41;
+            --border-color: #333333;
+        }
+
+        html, body { 
+            height: 100%; 
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-container {
+            display: flex;
+            height: 100vh;  /* not just min-height */
+            position: relative;
+        }
+
+        /* ID Section */
+        .id-section {
+            flex: 1;
+            min-width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            position: relative;
+        }
+
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--primary-green);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10px) translateX(100px); opacity: 0; }
+        }
+
+        /* Card Container and 3D Setup */
+        .id-card-container {
+            perspective: 1000px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .id-card {
+            width: 320px;
+            height: 480px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+            cursor: grab;
+        }
+
+        .id-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .id-card:active {
+            cursor: grabbing;
+        }
+
+        .id-card.dragging {
+            transition: none;
+            z-index: 1000;
+        }
+
+        /* Card Faces - CRITICAL POSITIONING */
+        .card-face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            border: 2px solid var(--primary-green);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+            overflow: hidden;
+        }
+
+        .card-face:hover {
+            box-shadow: 0 0 50px rgba(0, 255, 65, 0.5);
+        }
+
+        /* FRONT FACE - Profile Picture */
+        .card-front {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            transform: rotateY(0deg);
+            z-index: 2;
+        }
+
+        /* BACK FACE - Details */
+        .card-back {
+            background: var(--card-bg);
+            transform: rotateY(180deg);
+            z-index: 1;
+        }
+
+        /* Profile Image - Full Cover */
+        .profile-image { 
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+        }
+        
+        .profile-image img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block; 
+        }
+
+        /* Subtle dark gradient so text/buttons are readable */
+        .image-overlay {
+            position: absolute; 
+            inset: 0; 
+            pointer-events: none;
+            background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.85) 100%);
+            z-index: 1;
+        }
+
+        /* TOP name (single line) */
+        .front-name-top {
+            position: absolute; 
+            top: 0.8rem; 
+            left: 50%; 
+            transform: translateX(-50%);
+            z-index: 3;
+            padding: 0.45rem 0.9rem;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.55);
+            border: 1px solid rgba(0,255,65,0.35);
+            color: #fff; 
+            font-weight: 700;
+            white-space: nowrap;                 /* single line */
+            letter-spacing: 0.5px;
+            font-size: clamp(0.85rem, 1.2vw + 0.6rem, 1.2rem);
+            text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+        }
+
+        /* BOTTOM GitHub + LinkedIn buttons */
+        .front-actions {
+            position: absolute; 
+            left: 50%; 
+            bottom: 1rem; 
+            transform: translateX(-50%);
+            z-index: 3; 
+            display: flex; 
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            display: inline-flex; 
+            align-items: center; 
+            gap: 0.5rem;
+            padding: 0.5rem 0.85rem;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(0,255,65,0.35);
+            border-radius: 10px;
+            color: #fff; 
+            text-decoration: none; 
+            font-size: 0.9rem; 
+            font-weight: 600;
+            backdrop-filter: blur(6px);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        
+        .action-btn:hover { 
+            transform: translateY(-1px); 
+            box-shadow: 0 6px 16px rgba(0,255,65,0.25); 
+            border-color: var(--primary-green); 
+        }
+        
+        .action-btn i { 
+            font-size: 1rem; 
+            line-height: 1; 
+        }
+
+
+        /* Name Overlay */
+        .profile-name {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            line-height: 1.2;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+        }
+
+        /* Back Face Content */
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-green), var(--primary-cyan));
+            padding: 1rem;
+            text-align: center;
+            color: var(--dark-bg);
+            font-weight: bold;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            height: calc(100% - 80px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-content h1 {
+            font-size: 1.3rem;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .card-content .title {
+            color: var(--primary-cyan);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-item .label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .info-item .value {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .social-link {
+            color: var(--primary-green);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-link:hover {
+            color: var(--primary-cyan);
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .tech-tags span {
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--primary-green);
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            border: 1px solid var(--primary-green);
+        }
+
+        .resume-btn {
+            background: linear-gradient(45deg, var(--primary-green), var(--primary-cyan));
+            color: var(--dark-bg);
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            font-family: inherit;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+
+        .resume-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 65, 0.4);
+        }
+
+        /* Flip Instruction */
+        .flip-instruction {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--primary-green);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid var(--primary-green);
+            font-size: 0.8rem;
+            text-align: center;
+            animation: pulse 2s infinite;
+            backdrop-filter: blur(5px);
+            white-space: nowrap;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                opacity: 0.7;
+                transform: translateX(-50%) scale(1);
+            }
+            50% { 
+                opacity: 1;
+                transform: translateX(-50%) scale(1.05);
+            }
+        }
+
+        .flip-instruction i {
+            margin: 0 0.3rem;
+        }
+
+        .flip-instruction .fa-sync-alt {
+            animation: rotate 3s infinite linear;
+        }
+
+        @keyframes rotate {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        /* Terminal Section */
+        .terminal-section {
+            flex: 1.5;
+            background: var(--terminal-bg);
+            display: flex;
+            flex-direction: column;
+            min-width: 500px;
+            min-height: 0 !important;  /* allow child to shrink */
+        }
+
+        .terminal-header {
+            background: #222;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary-green);
+        }
+
+        .terminal-title {
+            color: var(--primary-green);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-item {
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-item:hover {
+            color: var(--primary-green);
+        }
+
+        .terminal-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0 !important;  /* CRITICAL */
+            overflow: hidden !important;  /* no whole-panel scroll */
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .terminal-output {
+            flex: 1;  /* take remaining space */
+            min-height: 0 !important;  /* CRITICAL */
+            overflow-y: auto !important;  /* only history scrolls */
+            margin: 0 !important;
+        }
+
+        .ascii-art pre {
+            color: var(--primary-green);
+            font-size: 0.6rem;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-message p {
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+        }
+
+        .command {
+            color: var(--primary-cyan);
+            font-weight: bold;
+        }
+
+        .terminal-output {
+            margin-bottom: 0;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            color: var(--primary-green);
+            background: var(--terminal-bg);
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .input-prompt {
+            margin-right: 0.5rem;
+        }
+
+        .typing-cursor {
+            animation: blink 1s infinite;
+            color: var(--primary-green);
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .hidden-input {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+        }
+
+        .command-output {
+            margin: 1rem 0;
+            color: var(--text-primary);
+        }
+
+        .command-output h3 {
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .command-output ul {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .command-output li {
+            margin: 0.25rem 0;
+        }
+
+        .command-output li:before {
+            content: ">";
+            color: var(--primary-green);
+            margin-right: 0.5rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .id-section {
+                min-width: unset;
+                padding: 1rem;
+                min-height: 60vh;
+            }
+
+            .id-card {
+                width: 280px;
+                height: 400px;
+            }
+
+            .profile-image {
+                font-size: 6rem;
+            }
+
+            .profile-name {
+                font-size: 1.4rem;
+                bottom: 1.5rem;
+                padding: 0.8rem 1.2rem;
+            }
+
+            .terminal-section {
+                min-width: unset;
+                min-height: 40vh;
+            }
+
+            .terminal-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-menu {
+                justify-content: center;
+            }
+
+            .ascii-art pre {
+                font-size: 0.4rem;
+            }
+
+            .flip-instruction {
+                bottom: -40px;
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .id-section {
+                padding: 0.5rem;
+            }
+
+            .id-card {
+                width: 260px;
+                height: 380px;
+            }
+
+            .profile-image {
+                font-size: 5rem;
+            }
+
+            .profile-name {
+                font-size: 1.2rem;
+                bottom: 1rem;
+                padding: 0.6rem 1rem;
+            }
+
+            .terminal-content {
+                padding: 1rem;
+            }
+
+            .nav-menu {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .flip-instruction {
+                bottom: -35px;
+                font-size: 0.65rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- ID Card Section (Left) -->
+        <div class="id-section">
+            <div class="floating-particles" id="particles"></div>
+            <div class="id-card-container">
+                <div class="id-card" id="idCard">
+                    <!-- FRONT FACE - Profile Picture -->
+                    <div class="card-face card-front">
+                        <div class="profile-image">
+                            <img src="IMG_2758.png"Siva Sastha Sai Krishna" loading="lazy" />
+                            <div class="image-overlay"></div>
+                            <div class="front-name-top">SIVA SASTHA SAI KRISHNA</div>
+                            <div class="front-actions">
+                                <a class="action-btn" href="https://github.com/sxi9" target="_blank" rel="noopener" aria-label="GitHub">
+                                    <i class="fab fa-github"></i><span>GitHub</span>
+                                </a>
+                                <a class="action-btn" href="https://www.linkedin.com/in/s-astha-sai-krishna-040719296" target="_blank" rel="noopener" aria-label="LinkedIn">
+                                    <i class="fab fa-linkedin"></i><span>LinkedIn</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BACK FACE - Details -->
+                    <div class="card-face card-back">
+                        <div class="card-header">
+                            <h2>ACCESS GRANTED</h2>
+                            <p>SECURITY CLEARANCE: DEVELOPER</p>
+                        </div>
+                        <div class="card-content">
+                            <h1>SIVA SASTHA SAI KRISHNA</h1>
+                            <p class="title">Full Stack Developer</p>
+                            
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="label">ID:</span>
+                                    <span class="value">DEV-007</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Level:</span>
+                                    <span class="value">Elite</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Specialty:</span>
+                                    <span class="value">Full Stack</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Status:</span>
+                                    <span class="value">Active</span>
+                                </div>
+                            </div>
+
+                            <div class="social-links">
+                                <a href="https://github.com/sxi9" target="_blank" class="social-link">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="https://www.linkedin.com/in/s-astha-sai-krishna-040719296" target="_blank" class="social-link">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                                <a href="#" class="social-link" id="https://drive.google.com/file/d/1NytPdz7GyZhSfe30N9tWZNSCp_woUzkB/view?usp=sharing">
+                                    <i class="fas fa-file-alt"></i>
+                                </a>
+                            </div>
+
+                            <div class="tech-tags">
+                                <span>Nmap</span><span>Wireshark</span><span>Burp Suite</span><span>Metasploit</span>
+                                <span>LangChain</span><span>Ollama</span><span>TensorFlow</span><span>MediaPipe</span>
+                                <span>Python</span><span>React</span><span>Flask</span><span>MongoDB</span>
+                            </div>
+
+                            <a href="#" class="resume-btn" id="resumeBtn" target="_blank">
+                                <i class="fas fa-download"></i>
+                                Download Resume
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flip-instruction">
+                    <i class="fas fa-sync-alt"></i>
+                    Click to flip & drag to move
+                    <i class="fas fa-hand-pointer"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminal Section (Right) -->
+        <div class="terminal-section">
+            <div class="terminal-header">
+                <div class="terminal-title">root@portfolio:~$</div>
+                <div class="nav-menu">
+                    <span class="nav-item" onclick="executeCommand('help')">help</span>
+                    <span class="nav-item" onclick="executeCommand('about')">about</span>
+                    <span class="nav-item" onclick="executeCommand('skills')">skills</span>
+                    <span class="nav-item" onclick="executeCommand('projects')">projects</span>
+                    <span class="nav-item" onclick="executeCommand('certs')">certs</span>
+                    <span class="nav-item" onclick="executeCommand('contact')">contact</span>
+                </div>
+            </div>
+            <div class="terminal-content" id="terminal-content">
+                <div class="terminal-output" id="terminal-output">
+                    <!-- history gets appended here -->
+                    <div class="welcome-message">
+                        <div class="ascii-art">
+<pre>
+    ____ _               ____                 _                 _        _ _ 
+    / ___| |__   ___ _ __/ ___|  ___ _ ____  _| |__   ___   ___ | | _____| | |
+   | |   | '_ \ / _ \ '__\___ \ / _ \ '__\ \/ / '_ \ / _ \ / _ \| |/ / _ \ | |
+   | |___| | | |  __/ |   ___) |  __/ |   >  <| | | | (_) | (_) |   <  __/ | |
+    \____|_| |_|\___|_|  |____/ \___|_|  /_/\_\_| |_|\___/ \___/|_|\_\___|_|_|
+   </pre>
+                        </div>
+                        <p>Welcome to the hacker portfolio terminal!</p>
+                        <p>Type <span class="command">help</span> to see available commands</p>
+                    </div>
+                </div>
+
+                <div class="input-line">
+                    <span class="input-prompt">root@portfolio:~$</span>
+                    <span id="command-display"></span>
+                    <span class="typing-cursor">█</span>
+                </div>
+            </div>
+            <input type="text" id="command-input" class="hidden-input" autofocus>
+        </div>
+    </div>
+
+    <script>
+        // Initialize particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                particlesContainer.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                    }
+                }, 25000);
+            }
+            
+            setInterval(createParticle, 2000);
+        }
+
+        // ID Card flip and drag functionality
+        const idCard = document.getElementById('idCard');
+        let isFlipped = false;
+        let isDragging = false;
+        let dragStartTime = 0;
+
+        // Click to flip functionality
+        idCard.addEventListener('click', (e) => {
+            // Only flip if not dragging and click was quick
+            if (!isDragging && (Date.now() - dragStartTime) < 200) {
+                isFlipped = !isFlipped;
+                idCard.classList.toggle('flipped', isFlipped);
+            }
+        });
+
+        // Drag functionality
+        let startX, startY, currentX = 0, currentY = 0;
+
+        idCard.addEventListener('mousedown', startDrag);
+        idCard.addEventListener('touchstart', startDrag);
+
+        function startDrag(e) {
+            dragStartTime = Date.now();
+            isDragging = false;
+            
+            const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
+            
+            startX = clientX - currentX;
+            startY = clientY - currentY;
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchend', stopDrag);
+        }
+
+        function drag(e) {
+            e.preventDefault();
+            const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
+            
+            currentX = clientX - startX;
+            currentY = clientY - startY;
+            
+            // Mark as dragging if moved more than 5px
+            if (Math.abs(currentX) > 5 || Math.abs(currentY) > 5) {
+                isDragging = true;
+                idCard.classList.add('dragging');
+            }
+            
+            // Apply transform with current flip state
+            const flipTransform = isFlipped ? 'rotateY(180deg)' : '';
+            idCard.style.transform = `translate(${currentX}px, ${currentY}px) ${flipTransform}`;
+        }
+
+        function stopDrag() {
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+            document.removeEventListener('touchend', stopDrag);
+            
+            // Reset position after a short delay
+            setTimeout(() => {
+                idCard.classList.remove('dragging');
+                currentX = 0;
+                currentY = 0;
+                const flipTransform = isFlipped ? 'rotateY(180deg)' : '';
+                idCard.style.transform = flipTransform;
+                
+                // Allow clicking again after drag ends
+                setTimeout(() => {
+                    isDragging = false;
+                }, 100);
+            }, 500);
+        }
+
+        // Terminal functionality
+        const terminalContent = document.getElementById('terminal-content');
+        const commandInput = document.getElementById('command-input');
+        const commandDisplay = document.getElementById('command-display');
+        
+        const commands = {
+            help: `
+<div class="command-output">
+<h3>Available Commands:</h3>
+ <ul>
+<li>about — Who am I?</li>
+<li>skills — Cybersecurity & AI/ML skills</li>
+<li>projects — Highlight projects</li>
+<li>certs — Certifications</li>
+<li>contact — How to reach me</li>
+<li>clear — Clear terminal</li>
+</ul>
+</div>`,
+            about: `
+<div class="command-output">
+<h3>About Me:</h3>
+<p>I'm Siva Sastha Sai Krishna — a Cybersecurity & AI/ML Engineer. I build
+  threat-detection systems (network & endpoint) and practical AI apps such as RAG-powered
+  product recommendation chatbots. Passionate about solving real-world problems with
+  secure, scalable engineering.</p>
+</div>`,
+            skills: `
+<div class="command-output">
+<h3>Technical Skills:</h3>
+<ul>
+<li><strong>Cybersecurity:</strong> Nmap, Wireshark, Burp Suite, Metasploit, Nessus; ARP spoofing detection; Network monitoring; Threat intel (VirusTotal, Shodan, MISP, Anomali)</li>
+<li><strong>AI/ML:</strong> LangChain, Ollama, RAG (Chroma), TensorFlow, MediaPipe, Hugging Face APIs, Prompt Engineering</li>
+<li><strong>Web/Backend:</strong> Python, Flask, FastAPI, Node.js, React, Streamlit</li>
+<li><strong>Data/Cloud:</strong> Pandas, PyPDF; MongoDB, MySQL; AWS, Azure</li>
+<li><strong>DevOps:</strong> Modular pipelines, CI/CD orientation, Docker</li>
+<li><strong>OS:</strong> Windows, Ubuntu</li>
+</ul>
+</div>`,
+            projects: `
+<div class="command-output">
+<h3>Featured Projects:</h3>
+<ul>
+<li><strong>Panasonic RAG Product Recommender</strong> — Agentic chatbot using LangChain + Ollama; RAG over CSV/PDF via Chroma; JSON logic extraction; Chainlit UI. <a href="https://github.com/sxi9/D2C_panasonic_chatbot" target="_blank" rel="noopener">GitHub</a></li>
+<li><strong>Drone Network Intrusion Detection</strong> — Real-time monitoring for unauthorized devices, IP/MAC spoofing; Nmap + Scapy; Flask dashboard; multithreaded engine. <a href="https://github.com/sxi9/drone-protection" target="_blank" rel="noopener">GitHub</a></li>
+<li><strong>VITA — AI Indian Sign Language Translator</strong> — MediaPipe + TensorFlow; real-time ISL to speech; Streamlit/Flask app. <a href="https://devfolio.co/projects/vita-for-indian-sign-language-1b43" target="_blank" rel="noopener">Project</a></li>
+<li><strong>BYOD Network Management Portal</strong> — pfSense REST APIs; auth & dashboards; improved network efficiency & reduced unauthorized access.</li>
+<li><strong>Homelab on Proxmox</strong> — Self-hosted services (AdGuard, OpenVPN, Immich, NxWitness) with Cloudflare Tunnels, reverse proxy & monitoring.</li>
+</ul>
+</div>`,
+            certs:  `
+<div class="command-output">
+<h3>Certifications</h3>
+<ul>
+    <li>ISC2 — CC (Certified in Cybersecurity)</li>
+    <li>IBM Cybersecurity</li>
+    <li>Fortinet Certified Associate in Cybersecurity</li>
+    <li>Cyber Security & Ethical Hacking — Quantum Learning (Nov 2023)</li>
+    <li>Data Science with Python — Simplilearn (May 2023)</li>
+</ul>
+</div> `,                  
+            contact: `
+<div class="command-output">
+<h3>Contact Information:</h3>
+<ul>
+<li>Email: <a href="mailto:sivasasthasaikrishna@gmail.com">sivasasthasaikrishna@gmail.com</a></li>
+<li>Phone: <a href="tel:+919380412078">+91 93804 12078</a></li>
+<li>GitHub: <a href="https://github.com/sxi9" target="_blank" rel="noopener">github.com/sxi9</a></li>
+<li>LinkedIn: <a href="https://www.linkedin.com/in/s-astha-sai-krishna-040719296" target="_blank" rel="noopener">linkedin.com/in/s-astha-sai-krishna-040719296</a></li>
+<li>Location: Bengaluru, India</li>
+</ul>
+</div>`
+        };
+
+        const terminalOutputEl = document.getElementById('terminal-output');
+
+        function executeCommand(cmd) { // the scroll container is .terminal-content now
+
+            // Helpers scoped here so you can paste as-is
+            const MAX_MESSAGES = 80;
+            const escapeHtml = (s) =>
+                s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+
+            if (cmd === 'clear') {
+                terminalOutputEl.innerHTML = '';
+                terminalOutputEl.scrollTop = terminalOutputEl.scrollHeight;
+                return;
+            }
+
+            const entry = document.createElement('div');
+            entry.className = 'entry';
+            entry.innerHTML = `
+                <div style="color: var(--primary-green); margin: 1rem 0;">
+                    root@portfolio:~$ ${escapeHtml(cmd)}
+                </div>
+                ${commands[cmd] ?? `
+                    <div class="command-output">
+                        <p style="color:#ff4444;">Command not found: ${escapeHtml(cmd)}</p>
+                        <p>Type 'help' to see available commands.</p>
+                    </div>
+                `}
+            `;
+            terminalOutputEl.appendChild(entry);
+
+            // Cap history to prevent bloat
+            while (terminalOutputEl.childElementCount > 100) {
+                terminalOutputEl.removeChild(terminalOutputEl.firstElementChild);
+            }
+
+            // Scroll the history only
+            terminalOutputEl.scrollTop = terminalOutputEl.scrollHeight;
+        }
+
+        // Handle keyboard input
+        let currentCommand = '';
+        
+        commandInput.addEventListener('input', (e) => {
+            currentCommand = e.target.value;
+            commandDisplay.textContent = currentCommand;
+        });
+
+        commandInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (currentCommand.trim()) {
+                    executeCommand(currentCommand.trim().toLowerCase());
+                    currentCommand = '';
+                    commandInput.value = '';
+                    commandDisplay.textContent = '';
+                }
+            }
+        });
+
+        // Focus input when clicking anywhere in terminal
+        terminalContent.addEventListener('click', () => {
+            commandInput.focus();
+        });
+
+        // Initialize
+        createParticles();
+        commandInput.focus();
+    </script>
+</body>
+</html>
