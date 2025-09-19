@@ -210,5 +210,6 @@ if __name__ == '__main__':
     print("  • POST /api/chat - AI chat endpoint")
     print("  • GET  /api/commands - Available commands")
     print("=" * 50)
-    
+
+app = app
    
