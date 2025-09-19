@@ -37,12 +37,15 @@
         :root {
             --primary-green: #00ff41;
             --primary-cyan: #00d4ff;
+            --primary-orange: #ff8800;
             --dark-bg: #0a0a0a;
             --card-bg: #1a1a1a;
             --terminal-bg: #0f0f0f;
             --text-primary: #ffffff;
             --text-secondary: #00ff41;
             --border-color: #333333;
+            --error-color: #ff4444;
+            --warning-color: #ffaa00;
         }
 
         html, body { 
@@ -242,7 +245,6 @@
             font-size: 1rem; 
             line-height: 1; 
         }
-
 
         /* Name Overlay */
         .profile-name {
@@ -553,6 +555,123 @@
             margin-right: 0.5rem;
         }
 
+        /* AI Response Styling */
+        .ai-response {
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 3px solid var(--primary-green);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .ai-response .ai-header {
+            color: var(--primary-green);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ai-response .ai-header .ai-icon {
+            animation: pulse-ai 2s infinite;
+        }
+
+        @keyframes pulse-ai {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .ai-thinking {
+            color: var(--primary-orange);
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .ai-thinking .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: var(--error-color);
+            background: rgba(255, 68, 68, 0.1);
+            border-left: 3px solid var(--error-color);
+            padding: 0.5rem 1rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .connection-status.online {
+            background: rgba(0, 255, 65, 0.2);
+            border: 1px solid var(--primary-green);
+            color: var(--primary-green);
+        }
+
+        /* Streaming text animation */
+        .streaming-text {
+            display: inline-block;
+        }
+
+        .streaming-cursor {
+            display: inline-block;
+            background: var(--primary-green);
+            width: 2px;
+            height: 1em;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .typing-sound-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--primary-green);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            color: var(--primary-green);
+            font-size: 0.8rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .typing-sound-indicator.active {
+            opacity: 1;
+        }
+
+        .typing-sound-indicator i {
+            animation: pulse-sound 0.5s infinite;
+        }
+
+        @keyframes pulse-sound {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .main-container {
@@ -593,6 +712,7 @@
 
             .nav-menu {
                 justify-content: center;
+                flex-wrap: wrap;
             }
 
             .ascii-art pre {
@@ -643,6 +763,14 @@
     </style>
 </head>
 <body>
+    <div class="connection-status" id="connection-status">
+        <i class="fas fa-circle"></i> Checking connection...
+    </div>
+
+    <div class="typing-sound-indicator" id="typing-sound-indicator">
+        <i class="fas fa-volume-up"></i> AI Typing...
+    </div>
+
     <div class="main-container">
         <!-- ID Card Section (Left) -->
         <div class="id-section">
@@ -652,7 +780,7 @@
                     <!-- FRONT FACE - Profile Picture -->
                     <div class="card-face card-front">
                         <div class="profile-image">
-                            <img src="IMG_2758.png"Siva Sastha Sai Krishna" loading="lazy" />
+                            <img src="IMG_2758.png" alt="Siva Sastha Sai Krishna" loading="lazy" />
                             <div class="image-overlay"></div>
                             <div class="front-name-top">SIVA SASTHA SAI KRISHNA</div>
                             <div class="front-actions">
@@ -757,6 +885,7 @@
                         </div>
                         <p>Welcome to the hacker portfolio terminal!</p>
                         <p>Type <span class="command">help</span> to see available commands</p>
+                        <p><span style="color: var(--primary-green);">🤖 AI Assistant Online</span> - Ask me anything about Siva's work!</p>
                     </div>
                 </div>
 
@@ -771,6 +900,110 @@
     </div>
 
     <script>
+        // Global variables
+        let backendUrl = ''; // Change this to your backend URL
+        let isBackendConnected = false;
+        let typingAudio = null;
+        let isTyping = false;
+
+        // Initialize audio context for typing sounds
+        function initializeAudio() {
+            try {
+                // Create audio context for typing sound
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Generate typing sound using Web Audio API
+                function createTypingSound() {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(800 + Math.random() * 200, audioContext.currentTime);
+                    oscillator.type = 'square';
+                    
+                    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                }
+                
+                return createTypingSound;
+            } catch (error) {
+                console.log('Audio not supported, continuing without sound');
+                return null;
+            }
+        }
+
+        // Play typing sound
+        function playTypingSound() {
+            if (typingAudio && !isTyping) return;
+            try {
+                typingAudio && typingAudio();
+            } catch (error) {
+                // Silently handle audio errors
+            }
+        }
+
+        // Stream text with typing effect
+        async function streamText(element, text, speed = 30) {
+            return new Promise((resolve) => {
+                const typingSoundIndicator = document.getElementById('typing-sound-indicator');
+                typingSoundIndicator.classList.add('active');
+                isTyping = true;
+                
+                let index = 0;
+                const streamContainer = document.createElement('div');
+                streamContainer.className = 'streaming-text';
+                element.appendChild(streamContainer);
+                
+                // Add cursor
+                const cursor = document.createElement('span');
+                cursor.className = 'streaming-cursor';
+                streamContainer.appendChild(cursor);
+                
+                function typeNextChar() {
+                    if (index < text.length) {
+                        const char = text[index];
+                        
+                        // Insert character before cursor
+                        const textNode = document.createTextNode(char);
+                        streamContainer.insertBefore(textNode, cursor);
+                        
+                        // Play typing sound for visible characters
+                        if (char !== ' ' && char !== '\n') {
+                            playTypingSound();
+                        }
+                        
+                        index++;
+                        
+                        // Variable speed based on character
+                        let nextDelay = speed;
+                        if (char === '.' || char === '!' || char === '?') {
+                            nextDelay = speed * 3; // Pause after sentences
+                        } else if (char === ',' || char === ';') {
+                            nextDelay = speed * 2; // Pause after commas
+                        } else if (char === '\n') {
+                            nextDelay = speed * 2; // Pause after line breaks
+                        }
+                        
+                        setTimeout(typeNextChar, nextDelay + Math.random() * 20);
+                    } else {
+                        // Remove cursor when done
+                        cursor.remove();
+                        isTyping = false;
+                        typingSoundIndicator.classList.remove('active');
+                        resolve();
+                    }
+                }
+                
+                typeNextChar();
+            });
+        }
+
         // Initialize particles
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
@@ -791,6 +1024,90 @@
             }
             
             setInterval(createParticle, 2000);
+        }
+
+        // Backend connection status
+        async function checkBackendConnection() {
+            const statusEl = document.getElementById('connection-status');
+            
+            try {
+                const response = await fetch(`${backendUrl}/api/health`, {
+                    method: 'GET',
+                    timeout: 5000
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    isBackendConnected = true;
+                    statusEl.innerHTML = '<i class="fas fa-robot"></i> AI Assistant Online';
+                    statusEl.className = 'connection-status online';
+                } else {
+                    throw new Error('Backend responded with error');
+                }
+            } catch (error) {
+                isBackendConnected = false;
+                statusEl.innerHTML = '<i class="fas fa-robot"></i> AI Assistant Offline';
+                statusEl.className = 'connection-status offline';
+            }
+
+            // Hide status after 5 seconds if connected
+            if (isBackendConnected) {
+                setTimeout(() => {
+                    statusEl.style.opacity = '0.7';
+                    statusEl.style.transform = 'scale(0.9)';
+                }, 5000);
+            }
+        }
+
+        // AI Chat function with streaming
+        async function chatWithAI(message) {
+            if (!isBackendConnected) {
+                return `<div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i> AI backend is not connected. 
+                    Please ensure the Flask backend is running on ${backendUrl}
+                </div>`;
+            }
+
+            try {
+                const response = await fetch(`${backendUrl}/api/chat-stream`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                return {
+                    response: data.response,
+                    stream: true
+                };
+                
+            } catch (error) {
+                console.error('AI Chat Error:', error);
+                return `<div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i> Failed to get AI response: ${error.message}
+                </div>`;
+            }
+        }
+
+        // Show AI thinking animation
+        function showAIThinking() {
+            const thinkingEl = document.createElement('div');
+            thinkingEl.className = 'ai-thinking';
+            thinkingEl.id = 'ai-thinking';
+            thinkingEl.innerHTML = '<i class="fas fa-cog spinner"></i> AI is thinking...';
+            
+            const terminalOutput = document.getElementById('terminal-output');
+            terminalOutput.appendChild(thinkingEl);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+            
+            return thinkingEl;
         }
 
         // ID Card flip and drag functionality
@@ -887,6 +1204,7 @@
 <li>contact — How to reach me</li>
 <li>clear — Clear terminal</li>
 </ul>
+<p style="color: var(--primary-green); margin-top: 1rem;">💡 You can also ask me any question about Siva's work, projects, or experience directly!</p>
 </div>`,
             about: `
 <div class="command-output">
@@ -929,7 +1247,7 @@
     <li>Cyber Security & Ethical Hacking — Quantum Learning (Nov 2023)</li>
     <li>Data Science with Python — Simplilearn (May 2023)</li>
 </ul>
-</div> `,                  
+</div>`,                  
             contact: `
 <div class="command-output">
 <h3>Contact Information:</h3>
@@ -945,9 +1263,7 @@
 
         const terminalOutputEl = document.getElementById('terminal-output');
 
-        function executeCommand(cmd) { // the scroll container is .terminal-content now
-
-            // Helpers scoped here so you can paste as-is
+        async function executeCommand(cmd) {
             const MAX_MESSAGES = 80;
             const escapeHtml = (s) =>
                 s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
@@ -958,18 +1274,83 @@
                 return;
             }
 
+            // Check if it's a predefined command first
+            if (commands[cmd]) {
+                const entry = document.createElement('div');
+                entry.className = 'entry';
+                entry.innerHTML = `
+                    <div style="color: var(--primary-green); margin: 1rem 0;">
+                        root@portfolio:~$ ${escapeHtml(cmd)}
+                    </div>
+                    ${commands[cmd]}
+                `;
+                terminalOutputEl.appendChild(entry);
+                terminalOutputEl.scrollTop = terminalOutputEl.scrollHeight;
+                return;
+            }
+
+            // If not a predefined command and backend is connected, send to AI
+            if (isBackendConnected) {
+                // Show command
+                const entry = document.createElement('div');
+                entry.className = 'entry';
+                entry.innerHTML = `
+                    <div style="color: var(--primary-green); margin: 1rem 0;">
+                        root@portfolio:~$ ${escapeHtml(cmd)}
+                    </div>
+                `;
+                terminalOutputEl.appendChild(entry);
+                
+                // Show thinking animation
+                const thinkingEl = showAIThinking();
+                
+                // Get AI response
+                const aiResponse = await chatWithAI(cmd);
+                
+                // Remove thinking animation
+                if (thinkingEl && thinkingEl.parentNode) {
+                    thinkingEl.parentNode.removeChild(thinkingEl);
+                }
+                
+                // Handle streaming response
+                if (typeof aiResponse === 'object' && aiResponse.stream) {
+                    // Create AI response container
+                    const aiContainer = document.createElement('div');
+                    aiContainer.className = 'ai-response';
+                    aiContainer.innerHTML = `
+                        <div class="ai-header">
+                            <i class="fas fa-robot ai-icon"></i> AI Assistant
+                        </div>
+                        <div class="ai-content"></div>
+                    `;
+                    
+                    entry.appendChild(aiContainer);
+                    
+                    // Stream the response text
+                    const contentDiv = aiContainer.querySelector('.ai-content');
+                    await streamText(contentDiv, aiResponse.response.replace(/\n/g, '\n'), 35);
+                    
+                } else {
+                    // Add regular AI response (fallback for errors)
+                    entry.innerHTML += aiResponse;
+                }
+                
+                terminalOutputEl.scrollTop = terminalOutputEl.scrollHeight;
+                return;
+            }
+
+            // If backend is not connected, show command not found
             const entry = document.createElement('div');
             entry.className = 'entry';
             entry.innerHTML = `
                 <div style="color: var(--primary-green); margin: 1rem 0;">
                     root@portfolio:~$ ${escapeHtml(cmd)}
                 </div>
-                ${commands[cmd] ?? `
-                    <div class="command-output">
-                        <p style="color:#ff4444;">Command not found: ${escapeHtml(cmd)}</p>
-                        <p>Type 'help' to see available commands.</p>
-                    </div>
-                `}
+                <div class="command-output">
+                    <p style="color:#ff4444;">Command not found: ${escapeHtml(cmd)}</p>
+                    <p>Type 'help' to see available commands.</p>
+                    <p style="color: var(--warning-color);">AI Assistant is offline - only basic commands available.</p>
+                </div>
             `;
             terminalOutputEl.appendChild(entry);
 
@@ -990,10 +1371,10 @@
             commandDisplay.textContent = currentCommand;
         });
 
-        commandInput.addEventListener('keypress', (e) => {
+        commandInput.addEventListener('keypress', async (e) => {
             if (e.key === 'Enter') {
                 if (currentCommand.trim()) {
-                    executeCommand(currentCommand.trim().toLowerCase());
+                    await executeCommand(currentCommand.trim());
                     currentCommand = '';
                     commandInput.value = '';
                     commandDisplay.textContent = '';
@@ -1006,9 +1387,26 @@
             commandInput.focus();
         });
 
-        // Initialize
-        createParticles();
-        commandInput.focus();
+        // Initialize everything
+        async function initialize() {
+            createParticles();
+            
+            // Initialize audio on user interaction (required by browsers)
+            document.addEventListener('click', () => {
+                if (!typingAudio) {
+                    typingAudio = initializeAudio();
+                }
+            }, { once: true });
+            
+            await checkBackendConnection();
+            commandInput.focus();
+            
+            // Check backend connection periodically
+            setInterval(checkBackendConnection, 30000); // Check every 30 seconds
+        }
+
+        // Start initialization
+        initialize();
     </script>
 </body>
 </html>
