@@ -1,0 +1,26 @@
+{
+  "functions": {
+    "api/app.py": {
+      "runtime": "python3.9"
+    }
+  },
+  "builds": [
+    {
+      "src": "api/app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/app.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "GEMINI_API_KEY": "@gemini_api_key"
+  }
+}
