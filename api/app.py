@@ -10,16 +10,16 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-CORS(app, origins=["*"])  # Allow all origins for Vercel deployment
+CORS(app)  # Enable CORS for frontend requests
 
 # Configure Gemini AI
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-if not GEMINI_API_KEY:
-    logger.warning("GEMINI_API_KEY not found in environment variables")
 
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-pro')
+
+genai.configure(api_key=GEMINI_API_KEY)
+
+# Initialize the model
+model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
 # System context for the AI
 SYSTEM_CONTEXT = """
@@ -82,9 +82,6 @@ RESPONSE GUIDELINES:
 def get_ai_response(user_input):
     """Get response from Gemini AI with error handling"""
     try:
-        if not GEMINI_API_KEY:
-            return "[ERROR] Gemini API key not configured. Please set GEMINI_API_KEY environment variable."
-        
         # Combine system context with user input
         prompt = f"{SYSTEM_CONTEXT}\n\nUser query: {user_input}"
         
@@ -102,8 +99,7 @@ def health_check():
     return jsonify({
         'status': 'online',
         'timestamp': datetime.now().isoformat(),
-        'ai_status': 'connected' if GEMINI_API_KEY else 'no_api_key',
-        'platform': 'vercel'
+        'ai_status': 'connected' if GEMINI_API_KEY != "your_gemini_api_key_here" else 'no_api_key'
     })
 
 @app.route('/api/chat', methods=['POST'])
@@ -119,6 +115,13 @@ def chat():
         
         if not user_message:
             return jsonify({'error': 'Message cannot be empty'}), 400
+        
+        # Check if API key is configured
+        if GEMINI_API_KEY == "your_gemini_api_key_here":
+            return jsonify({
+                'response': '[ERROR] Gemini API key not configured. Please set GEMINI_API_KEY environment variable.',
+                'timestamp': datetime.now().isoformat()
+            })
         
         # Get AI response
         ai_response = get_ai_response(user_message)
@@ -148,6 +151,13 @@ def chat_stream():
         if not user_message:
             return jsonify({'error': 'Message cannot be empty'}), 400
         
+        # Check if API key is configured
+        if GEMINI_API_KEY == "your_gemini_api_key_here":
+            return jsonify({
+                'response': '[ERROR] Gemini API key not configured. Please set GEMINI_API_KEY environment variable.',
+                'timestamp': datetime.now().isoformat()
+            })
+        
         # Get AI response (we'll simulate streaming on frontend)
         ai_response = get_ai_response(user_message)
         
@@ -173,24 +183,7 @@ def get_available_commands():
         'projects': 'Featured projects and work',
         'certs': 'Certifications and credentials',
         'contact': 'Contact information',
-        'clear': 'Clear terminal screen'
-    }
-    
-    return jsonify({
-        'commands': commands,
-        'timestamp': datetime.now().isoformat()
-    })
-
-@app.errorhandler(404)
-def not_found(error):
-    return jsonify({'error': 'Endpoint not found'}), 404
-
-@app.errorhandler(500)
-def internal_error(error):
-    return jsonify({'error': 'Internal server error'}), 500 and expertise',
-        'projects': 'Featured projects and work',
-        'certs': 'Certifications and credentials',
-        'contact': 'Contact information',
+        'ai': 'Chat with AI assistant (usage: ai <your question>)',
         'clear': 'Clear terminal screen'
     }
     
@@ -207,10 +200,15 @@ def not_found(error):
 def internal_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
-# For Vercel, we need this
 if __name__ == '__main__':
-    app.run(debug=False)
-
-# Vercel serverless function handler
-def handler(request, response):
-    return app(request, response)
+    print("=" * 50)
+    print("🚀 Portfolio Backend Starting...")
+    print("=" * 50)
+    print(f"API Key Status: {'✅ Configured' if GEMINI_API_KEY != 'your_gemini_api_key_here' else '❌ Not Configured'}")
+    print("Available endpoints:")
+    print("  • GET  /api/health - Health check")
+    print("  • POST /api/chat - AI chat endpoint")
+    print("  • GET  /api/commands - Available commands")
+    print("=" * 50)
+    
+   
