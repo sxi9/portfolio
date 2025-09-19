@@ -611,4 +611,728 @@
         }
 
         .ai-thinking .spinner {
-            animation: spin 1
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: var(--error-color);
+            background: rgba(255, 68, 68, 0.1);
+            border-left: 3px solid var(--error-color);
+            padding: 0.5rem 1rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .connection-status.online {
+            background: rgba(0, 255, 65, 0.2);
+            border: 1px solid var(--primary-green);
+            color: var(--primary-green);
+        }
+
+        .connection-status.offline {
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+        }
+
+        /* Streaming text animation */
+        .streaming-text {
+            display: inline-block;
+        }
+
+        .streaming-cursor {
+            display: inline-block;
+            background: var(--primary-green);
+            width: 2px;
+            height: 1em;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .typing-sound-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--primary-green);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            color: var(--primary-green);
+            font-size: 0.8rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .typing-sound-indicator.active {
+            opacity: 1;
+        }
+
+        .typing-sound-indicator i {
+            animation: pulse-sound 0.5s infinite;
+        }
+
+        @keyframes pulse-sound {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Mobile Responsive - Enhanced */
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .id-section {
+                flex: none;
+                min-width: unset;
+                padding: 1.5rem 1rem;
+                min-height: 60vh;
+                max-height: 60vh;
+            }
+
+            .terminal-section {
+                flex: 1;
+                min-width: unset;
+                min-height: 40vh;
+            }
+
+            .terminal-header {
+                padding: 0.5rem 1rem;
+            }
+
+            .nav-menu {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-item {
+                font-size: 0.85rem;
+                padding: 0.3rem 0.6rem;
+                background: rgba(0, 255, 65, 0.1);
+                border-radius: 6px;
+                border: 1px solid rgba(0, 255, 65, 0.3);
+            }
+
+            .terminal-content {
+                padding: 1rem;
+            }
+
+            .connection-status {
+                top: 10px;
+                right: 10px;
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .typing-sound-indicator {
+                bottom: 10px;
+                right: 10px;
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .id-section {
+                min-width: unset;
+                padding: 1rem;
+                min-height: 50vh;
+                max-height: 50vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .id-card {
+                width: 280px;
+                height: 400px;
+                margin: 0 auto;
+            }
+
+            .front-name-top {
+                font-size: clamp(0.8rem, 3vw, 1rem);
+                padding: 0.4rem 0.8rem;
+            }
+
+            .action-btn {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.7rem;
+            }
+
+            .action-btn span {
+                display: none; /* Hide text on mobile, keep icons */
+            }
+
+            .front-actions {
+                gap: 0.5rem;
+            }
+
+            .card-content {
+                padding: 1rem;
+            }
+
+            .card-content h1 {
+                font-size: 1.1rem;
+            }
+
+            .card-content .title {
+                font-size: 0.8rem;
+            }
+
+            .info-item .label,
+            .info-item .value {
+                font-size: 0.75rem;
+            }
+
+            .tech-tags span {
+                font-size: 0.6rem;
+                padding: 0.15rem 0.4rem;
+            }
+
+            .terminal-section {
+                min-width: unset;
+                min-height: 50vh;
+                flex: 1;
+            }
+
+            .terminal-header {
+                flex-direction: column;
+                gap: 0.8rem;
+                text-align: center;
+                padding: 0.75rem 1rem;
+            }
+
+            .terminal-title {
+                font-size: 1rem;
+            }
+
+            .nav-menu {
+                justify-content: center;
+                gap: 0.5rem;
+                flex-wrap: wrap;
+            }
+
+            .nav-item {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.7rem;
+                background: rgba(0, 255, 65, 0.1);
+                border-radius: 8px;
+                border: 1px solid rgba(0, 255, 65, 0.3);
+                transition: all 0.2s ease;
+                min-width: 60px;
+                text-align: center;
+            }
+
+            .nav-item:active {
+                transform: scale(0.95);
+                background: rgba(0, 255, 65, 0.2);
+            }
+
+            .terminal-content {
+                padding: 1rem;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .terminal-output {
+                flex: 1;
+                overflow-y: auto;
+                max-height: calc(50vh - 120px); /* Adjust for header */
+                margin-bottom: 1rem;
+            }
+
+            .ascii-art pre {
+                font-size: 0.35rem;
+                line-height: 1.1;
+                margin-bottom: 0.8rem;
+            }
+
+            .welcome-message p {
+                font-size: 0.85rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .command-output {
+                margin: 0.8rem 0;
+            }
+
+            .command-output h3 {
+                font-size: 1rem;
+                margin-bottom: 0.4rem;
+            }
+
+            .command-output p,
+            .command-output li {
+                font-size: 0.8rem;
+                line-height: 1.4;
+            }
+
+            .ai-response {
+                padding: 0.8rem;
+                margin: 0.8rem 0;
+                font-size: 0.8rem;
+                line-height: 1.4;
+            }
+
+            .ai-response .ai-header {
+                font-size: 0.85rem;
+                margin-bottom: 0.4rem;
+            }
+
+            .input-line {
+                padding-top: 0.5rem;
+                flex-shrink: 0;
+                font-size: 0.85rem;
+            }
+
+            .flip-instruction {
+                bottom: -40px;
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
+                white-space: nowrap;
+            }
+
+            /* Touch-friendly improvements */
+            .id-card {
+                touch-action: pan-x pan-y;
+            }
+
+            /* Larger touch targets */
+            .nav-item,
+            .action-btn,
+            .social-link,
+            .resume-btn {
+                min-height: 44px; /* iOS recommended touch target */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .connection-status,
+            .typing-sound-indicator {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .id-section {
+                padding: 0.5rem;
+                min-height: 45vh;
+                max-height: 45vh;
+            }
+
+            .id-card {
+                width: 260px;
+                height: 380px;
+            }
+
+            .front-name-top {
+                font-size: clamp(0.7rem, 4vw, 0.9rem);
+                padding: 0.3rem 0.6rem;
+                top: 0.5rem;
+            }
+
+            .action-btn {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            .action-btn i {
+                font-size: 0.9rem;
+            }
+
+            .front-actions {
+                bottom: 0.5rem;
+                gap: 0.4rem;
+            }
+
+            .card-content {
+                padding: 0.8rem;
+            }
+
+            .card-content h1 {
+                font-size: 1rem;
+            }
+
+            .terminal-section {
+                min-height: 55vh;
+            }
+
+            .terminal-header {
+                padding: 0.5rem;
+                gap: 0.6rem;
+            }
+
+            .terminal-title {
+                font-size: 0.9rem;
+            }
+
+            .nav-menu {
+                gap: 0.4rem;
+            }
+
+            .nav-item {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.5rem;
+                min-width: 50px;
+            }
+
+            .terminal-content {
+                padding: 0.8rem;
+            }
+
+            .terminal-output {
+                max-height: calc(55vh - 100px);
+            }
+
+            .ascii-art pre {
+                font-size: 0.3rem;
+                line-height: 1;
+            }
+
+            .welcome-message p {
+                font-size: 0.8rem;
+                line-height: 1.3;
+            }
+
+            .command-output p,
+            .command-output li {
+                font-size: 0.75rem;
+            }
+
+            .ai-response {
+                padding: 0.6rem;
+                font-size: 0.75rem;
+            }
+
+            .input-line {
+                font-size: 0.8rem;
+            }
+
+            .flip-instruction {
+                bottom: -30px;
+                font-size: 0.65rem;
+                padding: 0.3rem 0.6rem;
+            }
+
+            /* Even smaller screens */
+            .connection-status,
+            .typing-sound-indicator {
+                top: 5px;
+                right: 5px;
+                bottom: 5px;
+                font-size: 0.65rem;
+                padding: 0.2rem 0.4rem;
+            }
+
+            .typing-sound-indicator {
+                right: 5px;
+                bottom: 5px;
+                top: auto;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .id-card {
+                width: 240px;
+                height: 360px;
+            }
+
+            .front-name-top {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+
+            .terminal-output {
+                max-height: calc(55vh - 90px);
+            }
+
+            .nav-item {
+                font-size: 0.7rem;
+                padding: 0.25rem 0.4rem;
+                min-width: 45px;
+            }
+
+            .ascii-art pre {
+                font-size: 0.25rem;
+            }
+        }
+
+        /* Landscape mobile optimization */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .main-container {
+                flex-direction: row;
+                height: 100vh;
+            }
+
+            .id-section {
+                flex: 1;
+                min-height: 100vh;
+                max-height: 100vh;
+                min-width: 300px;
+            }
+
+            .terminal-section {
+                flex: 1.5;
+                min-height: 100vh;
+            }
+
+            .id-card {
+                width: 240px;
+                height: 320px;
+            }
+
+            .terminal-output {
+                max-height: calc(100vh - 140px);
+            }
+
+            .flip-instruction {
+                display: none; /* Hide on landscape mobile */
+            }
+        }
+
+        /* Very small screens - optimize for usability */
+        @media (max-width: 320px) {
+            .id-card {
+                width: 220px;
+                height: 340px;
+            }
+
+            .front-name-top {
+                font-size: 0.7rem;
+            }
+
+            .nav-menu {
+                gap: 0.2rem;
+            }
+
+            .nav-item {
+                font-size: 0.65rem;
+                padding: 0.2rem 0.3rem;
+                min-width: 40px;
+            }
+
+            .terminal-content {
+                padding: 0.6rem;
+            }
+
+            .ascii-art {
+                display: none; /* Hide ASCII art on very small screens */
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            /* Remove hover effects on touch devices */
+            .nav-item:hover,
+            .action-btn:hover,
+            .social-link:hover,
+            .resume-btn:hover {
+                transform: none;
+                box-shadow: none;
+            }
+
+            /* Add active states for touch feedback */
+            .nav-item:active {
+                background: rgba(0, 255, 65, 0.2);
+                transform: scale(0.95);
+            }
+
+            .action-btn:active,
+            .social-link:active,
+            .resume-btn:active {
+                transform: scale(0.95);
+            }
+
+            /* Improve scrolling performance */
+            .terminal-output {
+                -webkit-overflow-scrolling: touch;
+                scroll-behavior: smooth;
+            }
+
+            /* Optimize typing animation for touch */
+            .streaming-text {
+                word-break: break-word;
+                hyphens: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status" id="connection-status">
+        <i class="fas fa-circle"></i> Checking connection...
+    </div>
+
+    <div class="typing-sound-indicator" id="typing-sound-indicator">
+        <i class="fas fa-volume-up"></i> AI Typing...
+    </div>
+
+    <div class="main-container">
+        <!-- ID Card Section (Left) -->
+        <div class="id-section">
+            <div class="floating-particles" id="particles"></div>
+            <div class="id-card-container">
+                <div class="id-card" id="idCard">
+                    <!-- FRONT FACE - Profile Picture -->
+                    <div class="card-face card-front">
+                        <div class="profile-image">
+                            <!-- Replace with your actual image URL or use a placeholder -->
+                            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); display: flex; align-items: center; justify-content: center; color: var(--primary-green); font-size: 4rem;">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="image-overlay"></div>
+                            <div class="front-name-top">SIVA SASTHA SAI KRISHNA</div>
+                            <div class="front-actions">
+                                <a class="action-btn" href="https://github.com/sxi9" target="_blank" rel="noopener" aria-label="GitHub">
+                                    <i class="fab fa-github"></i><span>GitHub</span>
+                                </a>
+                                <a class="action-btn" href="https://www.linkedin.com/in/s-astha-sai-krishna-040719296" target="_blank" rel="noopener" aria-label="LinkedIn">
+                                    <i class="fab fa-linkedin"></i><span>LinkedIn</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BACK FACE - Details -->
+                    <div class="card-face card-back">
+                        <div class="card-header">
+                            <h2>ACCESS GRANTED</h2>
+                            <p>SECURITY CLEARANCE: DEVELOPER</p>
+                        </div>
+                        <div class="card-content">
+                            <h1>SIVA SASTHA SAI KRISHNA</h1>
+                            <p class="title">Cybersecurity & AI/ML Engineer</p>
+                            
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="label">ID:</span>
+                                    <span class="value">DEV-007</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Level:</span>
+                                    <span class="value">Elite</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Specialty:</span>
+                                    <span class="value">Full Stack</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Status:</span>
+                                    <span class="value">Active</span>
+                                </div>
+                            </div>
+
+                            <div class="social-links">
+                                <a href="https://github.com/sxi9" target="_blank" class="social-link">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="https://www.linkedin.com/in/s-astha-sai-krishna-040719296" target="_blank" class="social-link">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                                <a href="https://drive.google.com/file/d/1NytPdz7GyZhSfe30N9tWZNSCp_woUzkB/view?usp=sharing" class="social-link" target="_blank">
+                                    <i class="fas fa-file-alt"></i>
+                                </a>
+                            </div>
+
+                            <div class="tech-tags">
+                                <span>Nmap</span><span>Wireshark</span><span>Burp Suite</span><span>Metasploit</span>
+                                <span>LangChain</span><span>Ollama</span><span>TensorFlow</span><span>MediaPipe</span>
+                                <span>Python</span><span>React</span><span>Flask</span><span>MongoDB</span>
+                            </div>
+
+                            <a href="https://drive.google.com/file/d/1NytPdz7GyZhSfe30N9tWZNSCp_woUzkB/view?usp=sharing" class="resume-btn" target="_blank">
+                                <i class="fas fa-download"></i>
+                                Download Resume
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flip-instruction">
+                    <i class="fas fa-sync-alt"></i>
+                    Click to flip & drag to move
+                    <i class="fas fa-hand-pointer"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminal Section (Right) -->
+        <div class="terminal-section">
+            <div class="terminal-header">
+                <div class="terminal-title">root@portfolio:~$</div>
+                <div class="nav-menu">
+                    <span class="nav-item" onclick="executeCommand('help')">help</span>
+                    <span class="nav-item" onclick="executeCommand('about')">about</span>
+                    <span class="nav-item" onclick="executeCommand('skills')">skills</span>
+                    <span class="nav-item" onclick="executeCommand('projects')">projects</span>
+                    <span class="nav-item" onclick="executeCommand('certs')">certs</span>
+                    <span class="nav-item" onclick="executeCommand('contact')">contact</span>
+                </div>
+            </div>
+            <div class="terminal-content" id="terminal-content">
+                <div class="terminal-output" id="terminal-output">
+                    <!-- history gets appended here -->
+                    <div class="welcome-message">
+                        <div class="ascii-art">
+<pre>
+    ____ _               ____                 _                 _        _ _ 
+    / ___| |__   ___ _ __/ ___|  ___ _ ____  _| |__   ___   ___ | | _____| | |
+   | |   | '_ \ / _ \ '__\___ \ / _ \ '__\ \/ / '_ \ / _ \ / _ \| |/ / _ \ | |
+   | |___| | | |  __/ |   ___) |  __/ |   >  <| | | | (_) | (_) |   <  __/ | |
+    \____|_| |_|\___|_|  |____/ \___|_|  /_/\_\_| |_|\___/ \___/|_|\_\___|_|_|
+   </pre>
+                        </div>
+                        <p>Welcome to the hacker portfolio terminal!</p>
+                        <p>Type <span class="command">help</span> to see available commands</p>
+                        <p><span style="color: var(--primary-green);">🤖 AI Assistant Online</span> - Ask me anything about Siva's work!</p>
+                    </div>
+                </div>
+
+                <div class="input-line">
+                    <span class="input-prompt">root@portfolio:~$</span>
+                    <span id="command-display"></span>
+                    <span class="typing-cursor">█</span>
+                </div>
+            </div>
+            <input type="text" id="command-input" class="hidden-input" autofocus>
+        </div>
+    </div>
+
+    <script>
+        // Global variables - Vercel deployment ready
+        let backendUrl = window.location.origin; // Use same domain for Vercel
+        let isBackendConnected = false;
+        let typingAudio = null;
+        let isTyping = false;
