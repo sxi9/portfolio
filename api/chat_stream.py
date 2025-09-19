@@ -1,42 +1,51 @@
-from flask import Flask, request, jsonify
+from http.server import BaseHTTPRequestHandler
+import os, json
 from datetime import datetime
-import os
+import google.generativeai as genai
 
-app = Flask(__name__)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+MODEL_NAME = "gemini-1.5-flash"
 
-# ---- Choose ONE provider. Example below shows Gemini. ----
-USE_GEMINI = True
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel(MODEL_NAME)
+else:
+    model = None
 
-if USE_GEMINI:
-    import google.generativeai as genai
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-    if GEMINI_API_KEY:
-        genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel("gemini-1.5-flash-latest")
+class handler(BaseHTTPRequestHandler):
+    def _read_json(self):
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        raw = self.rfile.read(length) if length > 0 else b"{}"
+        try:
+            return json.loads(raw.decode("utf-8"))
+        except Exception:
+            return {}
 
-SYSTEM = (
-    "You are an AI assistant embedded in Siva Sastha Sai Krishna’s portfolio terminal. "
-    "Be concise, clear, and helpful. Use short paragraphs and bullet points where useful."
-)
+    def do_POST(self):
+        if not model:
+            self._send_json({"response": "[ERROR] Missing GEMINI_API_KEY"}, 500)
+            return
 
-@app.post("/")
-def chat_stream():
-    data = request.get_json(silent=True) or {}
-    msg = (data.get("message") or "").strip()
-    if not msg:
-        return jsonify({"error": "Message cannot be empty"}), 400
+        data = self._read_json()
+        msg = (data.get("message") or "").strip()
+        if not msg:
+            self._send_json({"error": "Message cannot be empty"}, 400)
+            return
 
-    # If key missing, return helpful error
-    if USE_GEMINI and not os.getenv("GEMINI_API_KEY"):
-        return jsonify({"response": "[ERROR] Missing GEMINI_API_KEY in Vercel → Project → Settings → Environment Variables."}), 500
-
-    try:
-        if USE_GEMINI:
-            resp = model.generate_content(f"{SYSTEM}\n\nUser: {msg}")
+        try:
+            resp = model.generate_content(f"User: {msg}")
             text = (resp.text or "").strip()
-        else:
-            text = "AI is configured but no model selected."
+            self._send_json({"response": text, "timestamp": datetime.now().isoformat()}, 200)
+        except Exception as e:
+            self._send_json({"response": f"[ERROR] {e}"}, 500)
 
-        return jsonify({"response": text, "timestamp": datetime.now().isoformat()})
-    except Exception as e:
-        return jsonify({"response": f"[ERROR] {e}"}), 500
+    def do_GET(self):
+        # Optional: let GET say the endpoint exists
+        self._send_json({"ok": True, "endpoint": "chat-stream"}, 200)
+
+    def _send_json(self, obj, status=200):
+        body = json.dumps(obj)
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(body.encode("utf-8"))
