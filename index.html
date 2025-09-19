@@ -21,19 +21,20 @@
         }
 
         .terminal-content{
-  flex: 1;
-  padding: 1.5rem;
-  font-family: 'JetBrains Mono', monospace;
-  display: flex;               /* NEW */
-  flex-direction: column;      /* NEW */
-  overflow: hidden;            /* NEW: stop whole area from scrolling */
-}
+            flex: 1;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-.terminal-output{
-  flex: 1;                     /* NEW: take all available height */
-  overflow-y: auto;            /* NEW: scroll only messages */
-  margin-bottom: 0;            /* NEW: remove extra gap pushing input down */
-}
+        .terminal-output{
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 0;
+        }
+
         :root {
             --primary-green: #00ff41;
             --primary-cyan: #00d4ff;
@@ -46,7 +47,7 @@
             --border-color: #333333;
             --error-color: #ff4444;
             --warning-color: #ffaa00;
-            --vh: 1vh; /* Custom viewport height for mobile */
+            --vh: 1vh;
         }
 
         html, body { 
@@ -60,16 +61,13 @@
             overflow-x: hidden;
             margin: 0;
             padding: 0;
-            /* Prevent pull-to-refresh on mobile */
             overscroll-behavior: none;
-            /* Prevent text selection on mobile */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
         }
 
-        /* Allow text selection in terminal output and input */
         .terminal-output,
         .command-display,
         .hidden-input {
@@ -82,7 +80,7 @@
         .main-container {
             display: flex;
             height: 100vh;  
-            height: calc(var(--vh, 1vh) * 100); /* Mobile viewport fix */
+            height: calc(var(--vh, 1vh) * 100);
             position: relative;
         }
 
@@ -124,7 +122,6 @@
             100% { transform: translateY(-10px) translateX(100px); opacity: 0; }
         }
 
-        /* Card Container and 3D Setup */
         .id-card-container {
             perspective: 1000px;
             position: relative;
@@ -153,7 +150,6 @@
             z-index: 1000;
         }
 
-        /* Card Faces - CRITICAL POSITIONING */
         .card-face {
             position: absolute;
             top: 0;
@@ -171,21 +167,18 @@
             box-shadow: 0 0 50px rgba(0, 255, 65, 0.5);
         }
 
-        /* FRONT FACE - Profile Picture */
         .card-front {
             background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
             transform: rotateY(0deg);
             z-index: 2;
         }
 
-        /* BACK FACE - Details */
         .card-back {
             background: var(--card-bg);
             transform: rotateY(180deg);
             z-index: 1;
         }
 
-        /* Profile Image - Full Cover */
         .profile-image { 
             position: relative; 
             width: 100%; 
@@ -199,7 +192,6 @@
             display: block; 
         }
 
-        /* Subtle dark gradient so text/buttons are readable */
         .image-overlay {
             position: absolute; 
             inset: 0; 
@@ -208,7 +200,6 @@
             z-index: 1;
         }
 
-        /* TOP name (single line) */
         .front-name-top {
             position: absolute; 
             top: 0.8rem; 
@@ -221,13 +212,12 @@
             border: 1px solid rgba(0,255,65,0.35);
             color: #fff; 
             font-weight: 700;
-            white-space: nowrap;                 /* single line */
+            white-space: nowrap;
             letter-spacing: 0.5px;
             font-size: clamp(0.85rem, 1.2vw + 0.6rem, 1.2rem);
             text-shadow: 0 2px 6px rgba(0,0,0,0.6);
         }
 
-        /* BOTTOM GitHub + LinkedIn buttons */
         .front-actions {
             position: absolute; 
             left: 50%; 
@@ -265,27 +255,6 @@
             line-height: 1; 
         }
 
-        /* Name Overlay */
-        .profile-name {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.8rem;
-            color: var(--text-primary);
-            text-align: center;
-            font-weight: bold;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-            line-height: 1.2;
-            z-index: 10;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 255, 65, 0.3);
-        }
-
-        /* Back Face Content */
         .card-header {
             background: linear-gradient(45deg, var(--primary-green), var(--primary-cyan));
             padding: 1rem;
@@ -399,7 +368,6 @@
             box-shadow: 0 5px 15px rgba(0, 255, 65, 0.4);
         }
 
-        /* Flip Instruction */
         .flip-instruction {
             position: absolute;
             bottom: -60px;
@@ -441,14 +409,13 @@
             to { transform: rotateY(360deg); }
         }
 
-        /* Terminal Section */
         .terminal-section {
             flex: 1.5;
             background: var(--terminal-bg);
             display: flex;
             flex-direction: column;
             min-width: 500px;
-            min-height: 0 !important;  /* allow child to shrink */
+            min-height: 0 !important;
         }
 
         .terminal-header {
@@ -486,16 +453,16 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 0 !important;  /* CRITICAL */
-            overflow: hidden !important;  /* no whole-panel scroll */
+            min-height: 0 !important;
+            overflow: hidden !important;
             padding: 1.5rem;
             font-family: 'JetBrains Mono', monospace;
         }
 
         .terminal-output {
-            flex: 1;  /* take remaining space */
-            min-height: 0 !important;  /* CRITICAL */
-            overflow-y: auto !important;  /* only history scrolls */
+            flex: 1;
+            min-height: 0 !important;
+            overflow-y: auto !important;
             margin: 0 !important;
         }
 
@@ -514,10 +481,6 @@
         .command {
             color: var(--primary-cyan);
             font-weight: bold;
-        }
-
-        .terminal-output {
-            margin-bottom: 0;
         }
 
         .input-line {
@@ -574,7 +537,6 @@
             margin-right: 0.5rem;
         }
 
-        /* AI Response Styling */
         .ai-response {
             background: rgba(0, 255, 65, 0.05);
             border-left: 3px solid var(--primary-green);
@@ -650,7 +612,6 @@
             color: var(--error-color);
         }
 
-        /* Streaming text animation */
         .streaming-text {
             display: inline-block;
         }
@@ -662,11 +623,6 @@
             height: 1em;
             animation: blink 1s infinite;
             margin-left: 2px;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
         }
 
         .typing-sound-indicator {
@@ -757,26 +713,14 @@
         }
 
         @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column;
-                height: auto;
-                min-height: 100vh;
-            }
-
             .id-section {
-                min-width: unset;
-                padding: 1rem;
                 min-height: 50vh;
                 max-height: 50vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
             }
 
             .id-card {
                 width: 280px;
                 height: 400px;
-                margin: 0 auto;
             }
 
             .front-name-top {
@@ -790,39 +734,11 @@
             }
 
             .action-btn span {
-                display: none; /* Hide text on mobile, keep icons */
-            }
-
-            .front-actions {
-                gap: 0.5rem;
-            }
-
-            .card-content {
-                padding: 1rem;
-            }
-
-            .card-content h1 {
-                font-size: 1.1rem;
-            }
-
-            .card-content .title {
-                font-size: 0.8rem;
-            }
-
-            .info-item .label,
-            .info-item .value {
-                font-size: 0.75rem;
-            }
-
-            .tech-tags span {
-                font-size: 0.6rem;
-                padding: 0.15rem 0.4rem;
+                display: none;
             }
 
             .terminal-section {
-                min-width: unset;
                 min-height: 50vh;
-                flex: 1;
             }
 
             .terminal-header {
@@ -832,185 +748,33 @@
                 padding: 0.75rem 1rem;
             }
 
-            .terminal-title {
-                font-size: 1rem;
-            }
-
-            .nav-menu {
-                justify-content: center;
-                gap: 0.5rem;
-                flex-wrap: wrap;
-            }
-
             .nav-item {
                 font-size: 0.8rem;
                 padding: 0.4rem 0.7rem;
-                background: rgba(0, 255, 65, 0.1);
-                border-radius: 8px;
-                border: 1px solid rgba(0, 255, 65, 0.3);
-                transition: all 0.2s ease;
                 min-width: 60px;
                 text-align: center;
             }
 
-            .nav-item:active {
-                transform: scale(0.95);
-                background: rgba(0, 255, 65, 0.2);
-            }
-
-            .terminal-content {
-                padding: 1rem;
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-            }
-
             .terminal-output {
-                flex: 1;
-                overflow-y: auto;
-                max-height: calc(50vh - 120px); /* Adjust for header */
+                max-height: calc(50vh - 120px);
                 margin-bottom: 1rem;
             }
 
             .ascii-art pre {
                 font-size: 0.35rem;
-                line-height: 1.1;
-                margin-bottom: 0.8rem;
-            }
-
-            .welcome-message p {
-                font-size: 0.85rem;
-                margin-bottom: 0.8rem;
-            }
-
-            .command-output {
-                margin: 0.8rem 0;
-            }
-
-            .command-output h3 {
-                font-size: 1rem;
-                margin-bottom: 0.4rem;
-            }
-
-            .command-output p,
-            .command-output li {
-                font-size: 0.8rem;
-                line-height: 1.4;
-            }
-
-            .ai-response {
-                padding: 0.8rem;
-                margin: 0.8rem 0;
-                font-size: 0.8rem;
-                line-height: 1.4;
-            }
-
-            .ai-response .ai-header {
-                font-size: 0.85rem;
-                margin-bottom: 0.4rem;
-            }
-
-            .input-line {
-                padding-top: 0.5rem;
-                flex-shrink: 0;
-                font-size: 0.85rem;
             }
 
             .flip-instruction {
                 bottom: -40px;
                 font-size: 0.7rem;
                 padding: 0.4rem 0.8rem;
-                white-space: nowrap;
-            }
-
-            /* Touch-friendly improvements */
-            .id-card {
-                touch-action: pan-x pan-y;
-            }
-
-            /* Larger touch targets */
-            .nav-item,
-            .action-btn,
-            .social-link,
-            .resume-btn {
-                min-height: 44px; /* iOS recommended touch target */
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .connection-status,
-            .typing-sound-indicator {
-                font-size: 0.7rem;
-                padding: 0.3rem 0.6rem;
             }
         }
 
         @media (max-width: 480px) {
-            .id-section {
-                padding: 0.5rem;
-                min-height: 45vh;
-                max-height: 45vh;
-            }
-
             .id-card {
                 width: 260px;
                 height: 380px;
-            }
-
-            .front-name-top {
-                font-size: clamp(0.7rem, 4vw, 0.9rem);
-                padding: 0.3rem 0.6rem;
-                top: 0.5rem;
-            }
-
-            .action-btn {
-                padding: 0.3rem 0.5rem;
-                font-size: 0.7rem;
-            }
-
-            .action-btn i {
-                font-size: 0.9rem;
-            }
-
-            .front-actions {
-                bottom: 0.5rem;
-                gap: 0.4rem;
-            }
-
-            .card-content {
-                padding: 0.8rem;
-            }
-
-            .card-content h1 {
-                font-size: 1rem;
-            }
-
-            .terminal-section {
-                min-height: 55vh;
-            }
-
-            .terminal-header {
-                padding: 0.5rem;
-                gap: 0.6rem;
-            }
-
-            .terminal-title {
-                font-size: 0.9rem;
-            }
-
-            .nav-menu {
-                gap: 0.4rem;
-            }
-
-            .nav-item {
-                font-size: 0.75rem;
-                padding: 0.3rem 0.5rem;
-                min-width: 50px;
-            }
-
-            .terminal-content {
-                padding: 0.8rem;
             }
 
             .terminal-output {
@@ -1019,143 +783,11 @@
 
             .ascii-art pre {
                 font-size: 0.3rem;
-                line-height: 1;
-            }
-
-            .welcome-message p {
-                font-size: 0.8rem;
-                line-height: 1.3;
-            }
-
-            .command-output p,
-            .command-output li {
-                font-size: 0.75rem;
-            }
-
-            .ai-response {
-                padding: 0.6rem;
-                font-size: 0.75rem;
-            }
-
-            .input-line {
-                font-size: 0.8rem;
-            }
-
-            .flip-instruction {
-                bottom: -30px;
-                font-size: 0.65rem;
-                padding: 0.3rem 0.6rem;
-            }
-
-            /* Even smaller screens */
-            .connection-status,
-            .typing-sound-indicator {
-                top: 5px;
-                right: 5px;
-                bottom: 5px;
-                font-size: 0.65rem;
-                padding: 0.2rem 0.4rem;
-            }
-
-            .typing-sound-indicator {
-                right: 5px;
-                bottom: 5px;
-                top: auto;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .id-card {
-                width: 240px;
-                height: 360px;
-            }
-
-            .front-name-top {
-                font-size: 0.75rem;
-                padding: 0.25rem 0.5rem;
-            }
-
-            .terminal-output {
-                max-height: calc(55vh - 90px);
-            }
-
-            .nav-item {
-                font-size: 0.7rem;
-                padding: 0.25rem 0.4rem;
-                min-width: 45px;
-            }
-
-            .ascii-art pre {
-                font-size: 0.25rem;
-            }
-        }
-
-        /* Landscape mobile optimization */
-        @media (max-height: 600px) and (orientation: landscape) {
-            .main-container {
-                flex-direction: row;
-                height: 100vh;
-            }
-
-            .id-section {
-                flex: 1;
-                min-height: 100vh;
-                max-height: 100vh;
-                min-width: 300px;
-            }
-
-            .terminal-section {
-                flex: 1.5;
-                min-height: 100vh;
-            }
-
-            .id-card {
-                width: 240px;
-                height: 320px;
-            }
-
-            .terminal-output {
-                max-height: calc(100vh - 140px);
-            }
-
-            .flip-instruction {
-                display: none; /* Hide on landscape mobile */
-            }
-        }
-
-        /* Very small screens - optimize for usability */
-        @media (max-width: 320px) {
-            .id-card {
-                width: 220px;
-                height: 340px;
-            }
-
-            .front-name-top {
-                font-size: 0.7rem;
-            }
-
-            .nav-menu {
-                gap: 0.2rem;
-            }
-
-            .nav-item {
-                font-size: 0.65rem;
-                padding: 0.2rem 0.3rem;
-                min-width: 40px;
-            }
-
-            .terminal-content {
-                padding: 0.6rem;
-            }
-
-            .ascii-art {
-                display: none; /* Hide ASCII art on very small screens */
             }
         }
 
         /* Touch device optimizations */
         @media (hover: none) and (pointer: coarse) {
-            /* Remove hover effects on touch devices */
             .nav-item:hover,
             .action-btn:hover,
             .social-link:hover,
@@ -1164,28 +796,14 @@
                 box-shadow: none;
             }
 
-            /* Add active states for touch feedback */
             .nav-item:active {
                 background: rgba(0, 255, 65, 0.2);
                 transform: scale(0.95);
             }
 
-            .action-btn:active,
-            .social-link:active,
-            .resume-btn:active {
-                transform: scale(0.95);
-            }
-
-            /* Improve scrolling performance */
             .terminal-output {
                 -webkit-overflow-scrolling: touch;
                 scroll-behavior: smooth;
-            }
-
-            /* Optimize typing animation for touch */
-            .streaming-text {
-                word-break: break-word;
-                hyphens: auto;
             }
         }
     </style>
@@ -1200,18 +818,15 @@
     </div>
 
     <div class="main-container">
-        <!-- ID Card Section (Left) -->
+        <!-- ID Card Section -->
         <div class="id-section">
             <div class="floating-particles" id="particles"></div>
             <div class="id-card-container">
                 <div class="id-card" id="idCard">
-                    <!-- FRONT FACE - Profile Picture -->
+                    <!-- FRONT FACE -->
                     <div class="card-face card-front">
                         <div class="profile-image">
-                            <!-- Replace with your actual image URL or use a placeholder -->
-                            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); display: flex; align-items: center; justify-content: center; color: var(--primary-green); font-size: 4rem;">
-                                <i class="fas fa-user-circle"></i>
-                            </div>
+                            <img src="https://via.placeholder.com/320x480/1a1a1a/00ff41?text=Your+Photo" alt="Siva Sastha Sai Krishna" loading="lazy" />
                             <div class="image-overlay"></div>
                             <div class="front-name-top">SIVA SASTHA SAI KRISHNA</div>
                             <div class="front-actions">
@@ -1225,7 +840,7 @@
                         </div>
                     </div>
 
-                    <!-- BACK FACE - Details -->
+                    <!-- BACK FACE -->
                     <div class="card-face card-back">
                         <div class="card-header">
                             <h2>ACCESS GRANTED</h2>
@@ -1261,7 +876,7 @@
                                 <a href="https://www.linkedin.com/in/s-astha-sai-krishna-040719296" target="_blank" class="social-link">
                                     <i class="fab fa-linkedin"></i>
                                 </a>
-                                <a href="https://drive.google.com/file/d/1NytPdz7GyZhSfe30N9tWZNSCp_woUzkB/view?usp=sharing" class="social-link" target="_blank">
+                                <a href="https://drive.google.com/file/d/1NytPdz7GyZhSfe30N9tWZNSCp_woUzkB/view?usp=sharing" target="_blank" class="social-link">
                                     <i class="fas fa-file-alt"></i>
                                 </a>
                             </div>
@@ -1288,7 +903,7 @@
             </div>
         </div>
 
-        <!-- Terminal Section (Right) -->
+        <!-- Terminal Section -->
         <div class="terminal-section">
             <div class="terminal-header">
                 <div class="terminal-title">root@portfolio:~$</div>
@@ -1299,40 +914,3 @@
                     <span class="nav-item" onclick="executeCommand('projects')">projects</span>
                     <span class="nav-item" onclick="executeCommand('certs')">certs</span>
                     <span class="nav-item" onclick="executeCommand('contact')">contact</span>
-                </div>
-            </div>
-            <div class="terminal-content" id="terminal-content">
-                <div class="terminal-output" id="terminal-output">
-                    <!-- history gets appended here -->
-                    <div class="welcome-message">
-                        <div class="ascii-art">
-<pre>
-    ____ _               ____                 _                 _        _ _ 
-    / ___| |__   ___ _ __/ ___|  ___ _ ____  _| |__   ___   ___ | | _____| | |
-   | |   | '_ \ / _ \ '__\___ \ / _ \ '__\ \/ / '_ \ / _ \ / _ \| |/ / _ \ | |
-   | |___| | | |  __/ |   ___) |  __/ |   >  <| | | | (_) | (_) |   <  __/ | |
-    \____|_| |_|\___|_|  |____/ \___|_|  /_/\_\_| |_|\___/ \___/|_|\_\___|_|_|
-   </pre>
-                        </div>
-                        <p>Welcome to the hacker portfolio terminal!</p>
-                        <p>Type <span class="command">help</span> to see available commands</p>
-                        <p><span style="color: var(--primary-green);">🤖 AI Assistant Online</span> - Ask me anything about Siva's work!</p>
-                    </div>
-                </div>
-
-                <div class="input-line">
-                    <span class="input-prompt">root@portfolio:~$</span>
-                    <span id="command-display"></span>
-                    <span class="typing-cursor">█</span>
-                </div>
-            </div>
-            <input type="text" id="command-input" class="hidden-input" autofocus>
-        </div>
-    </div>
-
-    <script>
-        // Global variables - Vercel deployment ready
-        let backendUrl = window.location.origin; // Use same domain for Vercel
-        let isBackendConnected = false;
-        let typingAudio = null;
-        let isTyping = false;
