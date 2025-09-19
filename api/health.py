@@ -1,8 +1,11 @@
-from flask import Flask, jsonify
+from http.server import BaseHTTPRequestHandler
+import json
 from datetime import datetime
 
-app = Flask(__name__)
-
-@app.get("/")
-def health():
-    return jsonify({"status": "online", "timestamp": datetime.now().isoformat()})
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = json.dumps({"status": "online", "timestamp": datetime.now().isoformat()})
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(body.encode("utf-8"))
