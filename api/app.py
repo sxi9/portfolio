@@ -187,6 +187,24 @@ def not_found(error):
 
 @app.errorhandler(500)
 def internal_error(error):
+    return jsonify({'error': 'Internal server error'}), 500 and expertise',
+        'projects': 'Featured projects and work',
+        'certs': 'Certifications and credentials',
+        'contact': 'Contact information',
+        'clear': 'Clear terminal screen'
+    }
+    
+    return jsonify({
+        'commands': commands,
+        'timestamp': datetime.now().isoformat()
+    })
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({'error': 'Endpoint not found'}), 404
+
+@app.errorhandler(500)
+def internal_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
 # For Vercel, we need this
