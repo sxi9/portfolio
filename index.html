@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>my portfolio -Siva Sastha Sai Krishna</title>
-    <meta property="og:title" content="My Portfolio – Siva Sastha Sai Krishna" />
-    <meta property="og:description" content="Explore my projects, skills, and web development work." />
-    <meta property="og:image" content="https://portfolio-l0871viyl-sasthas-projects-7a205e5f.vercel.app/preview.jpg" /> 
-    <meta property="og:url" content="https://portfolio-l0871viyl-sasthas-projects-7a205e5f.vercel.app/" />
+    <title>Siva Sastha Sai Krishna - Portfolio</title>
+    <meta property="og:title" content="Siva Sastha Sai Krishna - Cybersecurity & AI Engineer" />
+    <meta property="og:description" content="Cybersecurity & AI/ML Engineer specializing in threat detection systems and AI applications. Explore my projects and skills." />
     <meta property="og:type" content="website" />
+    <meta name="description" content="Portfolio of Siva Sastha Sai Krishna - Cybersecurity & AI/ML Engineer from Bengaluru, India. Specializing in network security, AI applications, and full-stack development.">
+    <meta name="keywords" content="cybersecurity, AI, machine learning, full stack developer, network security, python, react, portfolio">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,19 +21,20 @@
         }
 
         .terminal-content{
-  flex: 1;
-  padding: 1.5rem;
-  font-family: 'JetBrains Mono', monospace;
-  display: flex;               /* NEW */
-  flex-direction: column;      /* NEW */
-  overflow: hidden;            /* NEW: stop whole area from scrolling */
-}
+            flex: 1;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-.terminal-output{
-  flex: 1;                     /* NEW: take all available height */
-  overflow-y: auto;            /* NEW: scroll only messages */
-  margin-bottom: 0;            /* NEW: remove extra gap pushing input down */
-}
+        .terminal-output{
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 0;
+        }
+
         :root {
             --primary-green: #00ff41;
             --primary-cyan: #00d4ff;
@@ -63,7 +64,7 @@
 
         .main-container {
             display: flex;
-            height: 100vh;  /* not just min-height */
+            height: 100vh;
             position: relative;
         }
 
@@ -202,7 +203,7 @@
             border: 1px solid rgba(0,255,65,0.35);
             color: #fff; 
             font-weight: 700;
-            white-space: nowrap;                 /* single line */
+            white-space: nowrap;
             letter-spacing: 0.5px;
             font-size: clamp(0.85rem, 1.2vw + 0.6rem, 1.2rem);
             text-shadow: 0 2px 6px rgba(0,0,0,0.6);
@@ -244,26 +245,6 @@
         .action-btn i { 
             font-size: 1rem; 
             line-height: 1; 
-        }
-
-        /* Name Overlay */
-        .profile-name {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.8rem;
-            color: var(--text-primary);
-            text-align: center;
-            font-weight: bold;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-            line-height: 1.2;
-            z-index: 10;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 255, 65, 0.3);
         }
 
         /* Back Face Content */
@@ -429,7 +410,7 @@
             display: flex;
             flex-direction: column;
             min-width: 500px;
-            min-height: 0 !important;  /* allow child to shrink */
+            min-height: 0 !important;
         }
 
         .terminal-header {
@@ -467,16 +448,16 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 0 !important;  /* CRITICAL */
-            overflow: hidden !important;  /* no whole-panel scroll */
+            min-height: 0 !important;
+            overflow: hidden !important;
             padding: 1.5rem;
             font-family: 'JetBrains Mono', monospace;
         }
 
         .terminal-output {
-            flex: 1;  /* take remaining space */
-            min-height: 0 !important;  /* CRITICAL */
-            overflow-y: auto !important;  /* only history scrolls */
+            flex: 1;
+            min-height: 0 !important;
+            overflow-y: auto !important;
             margin: 0 !important;
         }
 
@@ -495,10 +476,6 @@
         .command {
             color: var(--primary-cyan);
             font-weight: bold;
-        }
-
-        .terminal-output {
-            margin-bottom: 0;
         }
 
         .input-line {
@@ -625,6 +602,12 @@
             color: var(--primary-green);
         }
 
+        .connection-status.offline {
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+        }
+
         /* Streaming text animation */
         .streaming-text {
             display: inline-block;
@@ -637,11 +620,6 @@
             height: 1em;
             animation: blink 1s infinite;
             margin-left: 2px;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
         }
 
         .typing-sound-indicator {
@@ -689,16 +667,6 @@
                 height: 400px;
             }
 
-            .profile-image {
-                font-size: 6rem;
-            }
-
-            .profile-name {
-                font-size: 1.4rem;
-                bottom: 1.5rem;
-                padding: 0.8rem 1.2rem;
-            }
-
             .terminal-section {
                 min-width: unset;
                 min-height: 40vh;
@@ -736,16 +704,6 @@
                 height: 380px;
             }
 
-            .profile-image {
-                font-size: 5rem;
-            }
-
-            .profile-name {
-                font-size: 1.2rem;
-                bottom: 1rem;
-                padding: 0.6rem 1rem;
-            }
-
             .terminal-content {
                 padding: 1rem;
             }
@@ -780,7 +738,7 @@
                     <!-- FRONT FACE - Profile Picture -->
                     <div class="card-face card-front">
                         <div class="profile-image">
-                            <img src="IMG_2758.png" alt="Siva Sastha Sai Krishna" loading="lazy" />
+                            <img src="https://via.placeholder.com/320x480/1a1a1a/00ff41?text=Your+Photo" alt="Siva Sastha Sai Krishna" loading="lazy" />
                             <div class="image-overlay"></div>
                             <div class="front-name-top">SIVA SASTHA SAI KRISHNA</div>
                             <div class="front-actions">
@@ -802,7 +760,7 @@
                         </div>
                         <div class="card-content">
                             <h1>SIVA SASTHA SAI KRISHNA</h1>
-                            <p class="title">Full Stack Developer</p>
+                            <p class="title">Cybersecurity & AI/ML Engineer</p>
                             
                             <div class="info-grid">
                                 <div class="info-item">
@@ -830,7 +788,7 @@
                                 <a href="https://www.linkedin.com/in/s-astha-sai-krishna-040719296" target="_blank" class="social-link">
                                     <i class="fab fa-linkedin"></i>
                                 </a>
-                                <a href="#" class="social-link" id="https://drive.google.com/file/d/1NytPdz7GyZhSfe30N9tWZNSCp_woUzkB/view?usp=sharing">
+                                <a href="https://drive.google.com/file/d/1NytPdz7GyZhSfe30N9tWZNSCp_woUzkB/view?usp=sharing" target="_blank" class="social-link">
                                     <i class="fas fa-file-alt"></i>
                                 </a>
                             </div>
@@ -841,7 +799,7 @@
                                 <span>Python</span><span>React</span><span>Flask</span><span>MongoDB</span>
                             </div>
 
-                            <a href="#" class="resume-btn" id="resumeBtn" target="_blank">
+                            <a href="https://drive.google.com/file/d/1NytPdz7GyZhSfe30N9tWZNSCp_woUzkB/view?usp=sharing" class="resume-btn" target="_blank">
                                 <i class="fas fa-download"></i>
                                 Download Resume
                             </a>
@@ -900,8 +858,8 @@
     </div>
 
     <script>
-        // Global variables
-        let backendUrl = ''; // Change this to your backend URL
+        // Global variables - FIXED FOR VERCEL
+        let backendUrl = window.location.origin; // Use same domain for Vercel
         let isBackendConnected = false;
         let typingAudio = null;
         let isTyping = false;
@@ -909,10 +867,8 @@
         // Initialize audio context for typing sounds
         function initializeAudio() {
             try {
-                // Create audio context for typing sound
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 
-                // Generate typing sound using Web Audio API
                 function createTypingSound() {
                     const oscillator = audioContext.createOscillator();
                     const gainNode = audioContext.createGain();
@@ -1059,12 +1015,12 @@
             }
         }
 
-        // AI Chat function with streaming
+        // AI Chat function - FIXED FOR VERCEL
         async function chatWithAI(message) {
             if (!isBackendConnected) {
                 return `<div class="error-message">
                     <i class="fas fa-exclamation-triangle"></i> AI backend is not connected. 
-                    Please ensure the Flask backend is running on ${backendUrl}
+                    Please ensure the backend is running properly.
                 </div>`;
             }
 
@@ -1264,7 +1220,6 @@
         const terminalOutputEl = document.getElementById('terminal-output');
 
         async function executeCommand(cmd) {
-            const MAX_MESSAGES = 80;
             const escapeHtml = (s) =>
                 s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 
@@ -1291,7 +1246,6 @@
 
             // If not a predefined command and backend is connected, send to AI
             if (isBackendConnected) {
-                // Show command
                 const entry = document.createElement('div');
                 entry.className = 'entry';
                 entry.innerHTML = `
@@ -1301,20 +1255,15 @@
                 `;
                 terminalOutputEl.appendChild(entry);
                 
-                // Show thinking animation
                 const thinkingEl = showAIThinking();
                 
-                // Get AI response
                 const aiResponse = await chatWithAI(cmd);
                 
-                // Remove thinking animation
                 if (thinkingEl && thinkingEl.parentNode) {
                     thinkingEl.parentNode.removeChild(thinkingEl);
                 }
                 
-                // Handle streaming response
                 if (typeof aiResponse === 'object' && aiResponse.stream) {
-                    // Create AI response container
                     const aiContainer = document.createElement('div');
                     aiContainer.className = 'ai-response';
                     aiContainer.innerHTML = `
@@ -1326,12 +1275,10 @@
                     
                     entry.appendChild(aiContainer);
                     
-                    // Stream the response text
                     const contentDiv = aiContainer.querySelector('.ai-content');
                     await streamText(contentDiv, aiResponse.response.replace(/\n/g, '\n'), 35);
                     
                 } else {
-                    // Add regular AI response (fallback for errors)
                     entry.innerHTML += aiResponse;
                 }
                 
@@ -1354,12 +1301,10 @@
             `;
             terminalOutputEl.appendChild(entry);
 
-            // Cap history to prevent bloat
             while (terminalOutputEl.childElementCount > 100) {
                 terminalOutputEl.removeChild(terminalOutputEl.firstElementChild);
             }
 
-            // Scroll the history only
             terminalOutputEl.scrollTop = terminalOutputEl.scrollHeight;
         }
 
