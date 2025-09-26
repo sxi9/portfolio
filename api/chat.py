@@ -100,7 +100,7 @@ def get_ai_response(user_input):
             return "[ERROR] Gemini API key not configured. Please set GEMINI_API_KEY environment variable."
         
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        model = genai.GenerativeModel('gemini-2.0-flash-001')
         
         # Combine system context with user input
         prompt = f"{SYSTEM_CONTEXT}\n\nUser query: {user_input}"
